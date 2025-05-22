@@ -25,7 +25,7 @@ csv = csv.drop(columns=[
     "club_flag_url", "nation_logo_url", "nation_flag_url"
 ])
 
-csv = csv[csv[TARGET_COL].notna()]             # usuń wiersze bez y
+csv = csv[csv[TARGET_COL].notna()]
 X_full = csv.drop(columns=[TARGET_COL])
 y_full = csv[TARGET_COL].values.reshape(-1, 1)
 
@@ -40,7 +40,7 @@ cat_cols = [
 
 
 
-X_train_df, X_test_df, y_train, y_test = train_test_split(
+X_train_2, X_test_2, y_train, y_test = train_test_split(
     X_full, y_full, test_size=TEST_SIZE, random_state=RANDOM_STATE
 )
 
@@ -52,12 +52,12 @@ numeric_pipe = Pipeline([
 
 
 
-ohe = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
+
 
 
 categorical_pipe = Pipeline([
     ("imputer", SimpleImputer(strategy="most_frequent")),
-    ("ohe",     ohe)
+    ("ohe",     OneHotEncoder(handle_unknown="ignore"))
 ])
 
 preprocessor = ColumnTransformer(
@@ -65,14 +65,8 @@ preprocessor = ColumnTransformer(
      ("cat", categorical_pipe, cat_cols)]
 )
 
-X_train = preprocessor.fit_transform(X_train_df).astype(np.float32)
-X_test  = preprocessor.transform(X_test_df).astype(np.float32)
-
-
-
-X_train64 = X_train.astype(np.float64, copy=False)
-y_train64 = y_train.astype(np.float64, copy=False)
-X_test64  = X_test .astype(np.float64, copy=False)
+X_train = preprocessor.fit_transform(X_train_2)
+X_test  = preprocessor.transform(X_test_2)
 
 
 def add_bias(X: np.ndarray) -> np.ndarray:
@@ -93,8 +87,8 @@ def predict(X: np.ndarray, w: np.ndarray) -> np.ndarray:
 
 
 
-w_closed      = closed_form_fit(X_train64, y_train64)
-y_pred_closed = predict(X_test64, w_closed)
+w_closed      = closed_form_fit(X_train, y_train)
+y_pred_closed = predict(X_test, w_closed)
 
 
 def minibatches(X, y, batch_size, rng):
@@ -114,7 +108,7 @@ def gradient_descent_fit(
     for epoch in range(epochs + 1):
         for Xb, yb in minibatches(X, y, batch_size, rng=rng):
             Xb_b = add_bias(Xb)
-            grad = 2 / len(yb) * Xb_b.T @ (Xb_b @ w - yb)
+            grad = 2 / len(yb) * Xb_b.T @ (Xb_b @ w - yb) #pochodna mse wzgledem wag
             w   -= lr * grad
 
         if  epoch % PRINT_EVERY == 0:
