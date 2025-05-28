@@ -50,7 +50,7 @@ preprocessor = ColumnTransformer(
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=testSize, random_state=randomnumber)
 
-# Model regresji liniowej (oryginalny)
+# Model regrsji liniowej (oryginalny)
 lr = Pipeline(steps=[
     ('preprocessor', preprocessor),
     ('regression', LinearRegression())
@@ -71,7 +71,7 @@ r2 = r2_score(y_train, y_pred_lr)
 print("Mean Squared Error (MSE) for Linear Regression(Training dataset):", mse)
 print("R2 score for Linear Regression(Training dataset):", r2)
 
-# Model regresji liniowej z cechami wielomianowymi
+# Model regresji liniowej z cechami welomianowymi
 lr_poly = Pipeline(steps=[
     ('preprocessor', preprocessor),
     ('feature_selection', SelectKBest(f_regression, k=50)),

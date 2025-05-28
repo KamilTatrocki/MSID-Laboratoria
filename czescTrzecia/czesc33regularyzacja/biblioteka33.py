@@ -52,7 +52,7 @@ preprocessor = ColumnTransformer(
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=testSize, random_state=randomnumber)
 
 
-# Model regresji liniowej z cechami wielomianowymi
+# Model regresji liniowej z cechami welomianowymi
 lr_poly = Pipeline(steps=[
     ('preprocessor', preprocessor),
     ('feature_selection', SelectKBest(f_regression, k=50)),
